@@ -2,10 +2,9 @@ use crate::bitboard::*;
 use crate::colour::*;
 use crate::moves::Move;
 use crate::LUT_DOUBLES;
-
 use std::fmt;
 
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Board {
     pub pieces: [Bitboard; 3],
     pub turn: Colour,
@@ -234,6 +233,11 @@ impl Board {
     #[must_use]
     pub fn both(&self) -> Bitboard {
         self.pieces[0] | self.pieces[1]
+    }
+
+    #[must_use]
+    pub fn occupied(&self) -> Bitboard {
+        self.both()
     }
 
     #[must_use]

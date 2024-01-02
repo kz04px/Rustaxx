@@ -126,6 +126,11 @@ impl Bitboard {
     }
 
     #[must_use]
+    pub const fn is_occupied(&self) -> bool {
+        self.0 != 0
+    }
+
+    #[must_use]
     pub const fn is_full(&self) -> bool {
         self.0 == 0x1ffffffffffff
     }
@@ -181,13 +186,18 @@ impl Bitboard {
     }
 
     #[must_use]
+    pub fn both(&self) -> Self {
+        self.singles() | self.doubles()
+    }
+
+    #[must_use]
     pub fn reach(&self) -> Self {
         self.singles() | self.doubles()
     }
 
     #[must_use]
-    pub const fn count(&self) -> u32 {
-        self.0.count_ones()
+    pub const fn count(&self) -> i32 {
+        self.0.count_ones() as i32
     }
 }
 
