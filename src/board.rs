@@ -15,7 +15,61 @@ pub struct Board {
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "board")
+        let mut height = 6;
+        let mut width = 6;
+
+        loop {
+            let mut yeet = true;
+            for x in 0..7 {
+                let idx = 7 * height + x;
+                if !self.blockers().is_set(idx) {
+                    yeet = false;
+                    break;
+                }
+            }
+            if !yeet {
+                break;
+            }
+            height -= 1;
+        }
+
+        loop {
+            let mut yeet = true;
+            for y in 0..7 {
+                let idx = 7 * y + width;
+                if !self.blockers().is_set(idx) {
+                    yeet = false;
+                    break;
+                }
+            }
+            if !yeet {
+                break;
+            }
+            width -= 1;
+        }
+
+        for y in (0..=height).rev() {
+            for x in 0..=width {
+                let idx = 7 * y + x;
+                if self.black().is_set(idx) {
+                    write!(f, "x")?;
+                } else if self.white().is_set(idx) {
+                    write!(f, "o")?;
+                } else if self.blockers().is_set(idx) {
+                    write!(f, " ")?;
+                } else {
+                    write!(f, "-")?;
+                }
+            }
+            writeln!(f, "")?;
+        }
+
+        match self.turn {
+            Colour::Black => writeln!(f, "Turn: x")?,
+            Colour::White => writeln!(f, "Turn: o")?,
+        }
+
+        Ok(())
     }
 }
 
