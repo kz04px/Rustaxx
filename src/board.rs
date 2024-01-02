@@ -344,4 +344,21 @@ impl Board {
         self.fullmoves += (self.turn == Colour::White) as u32;
         self.turn = !self.turn;
     }
+
+    #[must_use]
+    pub fn is_valid(&self) -> bool {
+        if self.black() & self.white() != Bitboard(0) {
+            return false;
+        }
+
+        if self.black() & self.blockers() != Bitboard(0) {
+            return false;
+        }
+
+        if self.white() & self.blockers() != Bitboard(0) {
+            return false;
+        }
+
+        true
+    }
 }
