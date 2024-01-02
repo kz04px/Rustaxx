@@ -155,7 +155,7 @@ impl Board {
     }
 
     #[must_use]
-    pub fn gameover(&self) -> bool {
+    pub fn is_gameover(&self) -> bool {
         self.black().is_empty()
             || self.white().is_empty()
             || self.halfmoves >= 100
@@ -221,7 +221,7 @@ impl Board {
 
     #[must_use]
     pub fn legal_moves(&self) -> Vec<Move> {
-        if self.gameover() {
+        if self.is_gameover() {
             return Vec::new();
         }
 
@@ -269,7 +269,7 @@ impl Board {
 
     #[must_use]
     pub fn count_moves(&self) -> u64 {
-        if self.gameover() {
+        if self.is_gameover() {
             return 0;
         }
 
@@ -278,7 +278,7 @@ impl Board {
 
     #[must_use]
     pub fn can_pass(&self) -> bool {
-        if self.gameover() {
+        if self.is_gameover() {
             return false;
         }
 

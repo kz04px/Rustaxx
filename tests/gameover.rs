@@ -17,7 +17,7 @@ mod tests {
 
         for fen in tests {
             let pos = ataxx::Board::from_fen(fen);
-            assert!(pos.gameover());
+            assert!(pos.is_gameover());
         }
     }
 
@@ -38,7 +38,7 @@ mod tests {
 
         for fen in tests {
             let pos = ataxx::Board::from_fen(fen);
-            assert!(!pos.gameover());
+            assert!(!pos.is_gameover());
         }
     }
 }

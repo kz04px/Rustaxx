@@ -4,7 +4,7 @@ use crate::board::*;
 pub fn perft(pos: &Board, depth: u8) -> u64 {
     if depth == 0 {
         return 1;
-    } else if pos.gameover() {
+    } else if pos.is_gameover() {
         return 0;
     } else if depth == 1 {
         return pos.count_pseudomoves();
