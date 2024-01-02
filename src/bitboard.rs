@@ -49,7 +49,19 @@ impl IntoIterator for Bitboard {
 
 impl fmt::Display for Bitboard {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:#X}", self.0)
+        for y in (0..7).rev() {
+            for x in 0..7 {
+                let idx = 7 * y + x;
+                if self.is_set(idx) {
+                    write!(f, "1")?;
+                } else {
+                    write!(f, "0")?;
+                }
+            }
+            writeln!(f, "")?;
+        }
+
+        Ok(())
     }
 }
 
@@ -116,6 +128,11 @@ impl Bitboard {
     #[must_use]
     pub const fn is_full(&self) -> bool {
         self.0 == 0x1ffffffffffff
+    }
+
+    #[must_use]
+    pub const fn is_set(&self, idx: u8) -> bool {
+        ((self.0 >> idx) & 1) == 1
     }
 
     #[must_use]
