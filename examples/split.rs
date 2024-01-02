@@ -8,6 +8,8 @@ fn main() {
     let start = Instant::now();
     let mut total: u64 = 0;
 
+    print!("{}", pos);
+
     for mv in &moves {
         let npos = pos.after_move(&mv);
         let nodes: u64 = ataxx::perft(&npos, depth);
