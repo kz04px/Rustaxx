@@ -255,26 +255,37 @@ impl Board {
         self.pieces[!self.turn as usize]
     }
 
-    pub fn makemove(&mut self, moved: &crate::Move) {
-        let to_bb = crate::Bitboard::from_index(moved.to);
-        let from_bb = crate::Bitboard::from_index(moved.from);
-        let captured: Bitboard = to_bb.singles() & self.them();
+    pub fn makemove(&mut self, mv: &crate::Move) {
+        match mv {
+            Move::Pass => {
+                self.halfmoves += 1;
+                self.fullmoves += (self.turn == Colour::White) as u32;
+                self.turn = !self.turn;
+            }
+            Move::Drop(sq) => {
+                let to_bb = crate::Bitboard::from_index(*sq);
+                let captured: Bitboard = to_bb.singles() & self.them();
 
-        // Remove and replace our stone
-        self.pieces[self.turn as usize] ^= to_bb | from_bb;
+                self.pieces[self.turn as usize] ^= to_bb | captured;
+                self.pieces[!self.turn as usize] ^= captured;
 
-        // Flip any captured stones
-        self.pieces[!self.turn as usize] ^= captured;
-        self.pieces[self.turn as usize] ^= captured;
+                self.halfmoves = 0;
+                self.fullmoves += (self.turn == Colour::White) as u32;
+                self.turn = !self.turn;
+            }
+            Move::Jump(fr, to) => {
+                let to_bb = crate::Bitboard::from_index(*to);
+                let from_bb = crate::Bitboard::from_index(*fr);
+                let captured: Bitboard = to_bb.singles() & self.them();
 
-        self.halfmoves += 1;
-        self.fullmoves += (self.turn == Colour::White) as u32;
+                self.pieces[self.turn as usize] ^= to_bb | from_bb | captured;
+                self.pieces[!self.turn as usize] ^= captured;
 
-        if moved.is_single() {
-            self.halfmoves = 0;
+                self.halfmoves += 1;
+                self.fullmoves += (self.turn == Colour::White) as u32;
+                self.turn = !self.turn;
+            }
         }
-
-        self.turn = !self.turn;
     }
 
     #[must_use]
@@ -292,17 +303,25 @@ impl Board {
 
         // Single moves
         for sq in self.us().singles() & self.empty() {
-            vec.push(Move { from: sq, to: sq });
+            vec.push(Move::Drop(sq));
         }
 
         // Double moves
         for from in self.us() {
             for to in LUT_DOUBLES[from as usize] & self.empty() {
-                vec.push(Move { from, to });
+                vec.push(Move::Jump(from, to));
             }
         }
 
         vec
+    }
+
+    #[must_use]
+    pub fn is_legal_move(&self, mv: &Move) -> bool {
+        match mv {
+            Move::Pass => self.can_pass(),
+            _ => self.pseudolegal_moves().iter().find(|&x| x == mv).is_some(),
+        }
     }
 
     #[must_use]
